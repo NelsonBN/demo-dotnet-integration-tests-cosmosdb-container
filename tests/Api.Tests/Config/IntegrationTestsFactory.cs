@@ -33,8 +33,7 @@ public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductReque
             .WithPortBinding(_cosmosDbContainerApPort, _cosmosDbContainerApPort)
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilHttpRequestIsSucceeded(request => request
-                    .ForPort((ushort)_cosmosDbContainerApPort)
-                    .ForPath("/")))
+                    .ForPort((ushort)_cosmosDbContainerApPort)))
             .WithOutputConsumer(
                 Consume.RedirectStdoutAndStderrToStream(
                     Console.OpenStandardOutput(),
