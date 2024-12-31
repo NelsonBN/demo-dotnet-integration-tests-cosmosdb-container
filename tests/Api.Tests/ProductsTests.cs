@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Api.Tests.Config;
 using Bogus;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Api.Tests.UsesCases;
+namespace Api.Tests;
 
 [Collection(nameof(CollectionIntegrationTests))]
 public sealed class ProductsTests
