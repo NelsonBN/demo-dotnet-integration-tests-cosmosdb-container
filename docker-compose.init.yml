@@ -1,0 +1,40 @@
+networks:
+  demo-networks:
+    driver: bridge
+
+services:
+
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+    container_name: cosmosdb
+    ports:
+      - 8081:8081 # Api
+      - 1234:1234 # UI
+    environment:
+      - GATEWAY_PUBLIC_ENDPOINT=cosmosdb # It needs to be the same as the 'hostname' if you don't define the 'hostname' should be the same as the 'container_name' if you don't define the 'container_name' should be the same as the 'service_name'
+    networks:
+      - demo-networks
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "http://localhost:1234"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+
+  cosmosdb-init:
+    image: python:3.11-slim
+    container_name: cosmosdb-init
+    environment:
+      - URI=http://cosmosdb:8081
+      - KEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
+      - DATABASE=demodb
+      - CONTAINER=democontainer
+      - CONTAINER_PK=democontainer
+    volumes:
+      - ./tests/init-db.py:/app/init-db.py
+    command: sh -c "pip install azure-cosmos && python /app/init-db.py"
+    networks:
+      - demo-networks
+    depends_on:
+      cosmosdb:
+        condition: service_healthy

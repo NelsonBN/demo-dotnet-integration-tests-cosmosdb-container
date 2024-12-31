@@ -1,0 +1,8 @@
+services:
+
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+    container_name: cosmosdb
+    ports:
+      - 8081:8081 # Api
+      - 1234:1234 # UI

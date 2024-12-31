@@ -1,0 +1,30 @@
+@host = http://localhost:8080/products
+
+GET {{host}}
+
+###
+
+GET {{host}}/e6250604-b49e-4a9d-b29a-6f04694be350
+
+###
+
+POST {{host}}
+Content-Type: application/json
+
+{
+    "name": "Book",
+    "Quantity": 343
+}
+
+###
+
+PUT {{host}}/e6250604-b49e-4a9d-b29a-6f04694be351
+Content-Type: application/json
+
+{
+    "name": "Book",
+    "Quantity": 31
+}
+###
+
+DELETE {{host}}/84d1e21d-595b-466b-bec2-c9f84ab5341b
