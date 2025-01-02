@@ -9,6 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.DelegatingHandlerOverri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.PortOverrides.Tests", "tests\Api.PortOverrides.Tests\Api.PortOverrides.Tests.csproj", "{39ECAD6E-155F-4D5E-BA62-BB18477E0B12}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A2C8B090-B813-4194-A5AB-8A3754FD69D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5E543700-8F6A-48E5-AB2A-8F9E2A721606}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Readiness.Tests", "tests\Readiness.Tests\Readiness.Tests.csproj", "{46FDFDC3-7CBD-4046-A384-7D07E2E662FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +33,18 @@ Global
 		{39ECAD6E-155F-4D5E-BA62-BB18477E0B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39ECAD6E-155F-4D5E-BA62-BB18477E0B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39ECAD6E-155F-4D5E-BA62-BB18477E0B12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46FDFDC3-7CBD-4046-A384-7D07E2E662FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46FDFDC3-7CBD-4046-A384-7D07E2E662FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46FDFDC3-7CBD-4046-A384-7D07E2E662FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46FDFDC3-7CBD-4046-A384-7D07E2E662FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{105E9E2D-433C-481F-8B02-D3BD2C11A532} = {A2C8B090-B813-4194-A5AB-8A3754FD69D5}
+		{A2E5BED8-6A6C-49D1-A2BC-1930013DFBB9} = {5E543700-8F6A-48E5-AB2A-8F9E2A721606}
+		{39ECAD6E-155F-4D5E-BA62-BB18477E0B12} = {5E543700-8F6A-48E5-AB2A-8F9E2A721606}
+		{46FDFDC3-7CBD-4046-A384-7D07E2E662FC} = {5E543700-8F6A-48E5-AB2A-8F9E2A721606}
 	EndGlobalSection
 EndGlobal
