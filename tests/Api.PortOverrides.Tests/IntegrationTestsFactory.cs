@@ -27,7 +27,7 @@ public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductReque
         }
 
         _container = new ContainerBuilder()
-            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20250117")
+            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview")
             .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithEnvironment("PORT", _cosmosDbContainerApPort.ToString())
             .WithPortBinding(_cosmosDbContainerApPort, _cosmosDbContainerApPort)
