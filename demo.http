@@ -1,14 +1,15 @@
-@host = http://localhost:8080/products
+@ApiHost = http://localhost:8080
+@healthCheckHost = http://localhost:8080
 
-GET {{host}}
-
-###
-
-GET {{host}}/e6250604-b49e-4a9d-b29a-6f04694be350
+GET {{ApiHost}}
 
 ###
 
-POST {{host}}
+GET {{ApiHost}}/products/e6250604-b49e-4a9d-b29a-6f04694be350
+
+###
+
+POST {{ApiHost}}/products
 Content-Type: application/json
 
 {
@@ -18,7 +19,7 @@ Content-Type: application/json
 
 ###
 
-PUT {{host}}/e6250604-b49e-4a9d-b29a-6f04694be351
+PUT {{ApiHost}}/products/e6250604-b49e-4a9d-b29a-6f04694be351
 Content-Type: application/json
 
 {
@@ -27,4 +28,17 @@ Content-Type: application/json
 }
 ###
 
-DELETE {{host}}/84d1e21d-595b-466b-bec2-c9f84ab5341b
+DELETE {{ApiHost}}/products/84d1e21d-595b-466b-bec2-c9f84ab5341b
+
+
+### Health Checks - root endpoint
+GET {{healthCheckHost}}
+
+### Health Check - health endpoint
+GET {{healthCheckHost}}/health
+
+### Health Check - readiness endpoint
+GET {{healthCheckHost}}/ready
+
+### Health Check - status endpoint
+GET {{healthCheckHost}}/status
