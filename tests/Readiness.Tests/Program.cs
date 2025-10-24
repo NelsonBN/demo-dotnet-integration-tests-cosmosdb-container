@@ -55,7 +55,7 @@ while(true)
         catch(Exception ex)
         {
             var error = ex.ToString();
-            throw new Exception($"[ERROR][STEP 1] {ex.Message}");
+            throw new Exception($"--------------------> [ERROR][GETTING DATABASE] {ex.Message}");
         }
 
 
@@ -64,7 +64,7 @@ while(true)
 
         var databaseProperties = (await client.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
 
-        Console.WriteLine($"Database: {databaseProperties.Id}");
+        Console.WriteLine($"--------------------> [SUCCESS] Database: {databaseProperties.Id}");
 
 
         //Console.WriteLine("Press any key 'ESC' to stop or any other key to restart...");
@@ -77,7 +77,7 @@ while(true)
     }
     catch(Exception exception)
     {
-        Console.WriteLine($"[ERROR] {exception.Message}");
+        Console.WriteLine($"--------------------> [ERROR][GLOBAL] {exception.Message}");
     }
     if(container is not null)
     {
