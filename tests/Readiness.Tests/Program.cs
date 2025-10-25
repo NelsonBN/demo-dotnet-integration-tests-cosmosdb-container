@@ -29,7 +29,6 @@ while(true)
             .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithPortBinding(PORT_HEALTHCHECK, true)
             .WithPortBinding(PORT_API, true)
-            //.WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(PORT_API)))
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
             //.WithOutputConsumer(Consume.RedirectStdoutAndStderrToStream(
             //    Console.OpenStandardOutput(),
