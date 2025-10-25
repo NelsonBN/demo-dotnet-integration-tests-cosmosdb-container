@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,16 +17,16 @@ namespace Api.Tests;
 public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductRequest>, IAsyncLifetime
 {
     private readonly IContainer _container;
+    private const int PORT_HEALTHCHECK = 8080;
     private const int PORT_API = 8081;
 
     public IntegrationTestsFactory()
         => _container = new ContainerBuilder()
-            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview")
+            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20251022")
             .WithEnvironment("ENABLE_EXPLORER", "false")
+            .WithPortBinding(PORT_HEALTHCHECK, true)
             .WithPortBinding(PORT_API, true)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilHttpRequestIsSucceeded(request => request
-                .ForPort(PORT_API)))
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
             .WithOutputConsumer(Consume.RedirectStdoutAndStderrToStream(
                 Console.OpenStandardOutput(),
                 Console.OpenStandardError()))
@@ -67,6 +68,40 @@ public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductReque
         {
             request.RequestUri = new UriBuilder(Uri.UriSchemeHttp, _hostname, _port, request.RequestUri?.PathAndQuery).Uri;
             return base.SendAsync(request, cancellationToken);
+        }
+    }
+
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
+            const string REQUEST_URI = "http://localhost";
+
+            using var httpClient = new HttpClient(new UriRewriter(container.Hostname, container.GetMappedPublicPort(8080)));
+
+            try
+            {
+                using var httpResponse = await httpClient.GetAsync(REQUEST_URI)
+                    .ConfigureAwait(false);
+
+                if(httpResponse.IsSuccessStatusCode)
+                {
+                    var content = await httpResponse.Content.ReadAsStringAsync();
+
+                    // Deserialize and check the ready field and validate if was returned as true
+                    using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
+                    if(jsonDocument.RootElement.TryGetProperty("ready", out var readyProperty) &&
+                       readyProperty.GetBoolean())
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch { }
+
+            return false;
         }
     }
 }

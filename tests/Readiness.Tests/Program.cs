@@ -11,6 +11,7 @@ using Microsoft.Azure.Cosmos;
 Console.WriteLine("Starting...");
 
 
+const int PORT_HEALTHCHECK = 8080;
 const int PORT_API = 8081;
 const string DATABASE_NAME = "Demo";
 const string CONTAINER_NAME = "Products";
@@ -24,8 +25,9 @@ while(true)
         Console.WriteLine("Starting CosmosDB Emulator...");
 
         container = new ContainerBuilder()
-            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview")
+            .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20251022")
             .WithEnvironment("ENABLE_EXPLORER", "false")
+            .WithPortBinding(PORT_HEALTHCHECK, true)
             .WithPortBinding(PORT_API, true)
             //.WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request => request.ForPort(PORT_API)))
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
@@ -114,20 +116,36 @@ internal class WaitUntil : IWaitUntil
         // CosmosDB's preconfigured HTTP client will redirect the request to the container.
         const string REQUEST_URI = "http://localhost";
 
-        using var client = new HttpClient(new UriRewriter(container.Hostname, container.GetMappedPublicPort(8081)));
+        using var httpClient = new HttpClient(new UriRewriter(container.Hostname, container.GetMappedPublicPort(8080)));
 
 
         try
         {
-            using var httpResponse = await client.GetAsync(REQUEST_URI).ConfigureAwait(false);
+            using var httpResponse = await httpClient
+                .GetAsync(REQUEST_URI).ConfigureAwait(false);
 
             if(httpResponse.IsSuccessStatusCode)
             {
-                await Task.Delay(1_000);
-                return true;
+                var content = await httpResponse.Content.ReadAsStringAsync();
+                //Console.WriteLine($"--------------------> [HEALTH CHECK] {content}");
+
+                // Deserialize and check the ready field and validate if was returned as true
+                using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
+                if(jsonDocument.RootElement.TryGetProperty("ready", out var readyProperty) &&
+                   readyProperty.GetBoolean())
+                {
+                    return true;
+                }
+                // else
+                // {
+                //     Console.WriteLine($"--------------------> [HEALTH CHECK] Container not ready yet");
+                // }
             }
         }
-        catch { }
+        catch(Exception exception)
+        {
+            //Console.WriteLine($"--------------------> [ERROR][HEALTH CHECK] {exception.Message}");
+        }
         return false;
     }
 }
