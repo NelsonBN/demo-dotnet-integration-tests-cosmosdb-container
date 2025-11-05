@@ -30,3 +30,17 @@ try:
     print(f'### Container "{container}" created')
 except azure.cosmos.exceptions.CosmosResourceExistsError:
     print(f'### Container "{container}" already exists')
+
+
+try:
+    print(f'### Insert sample item into container "{container}"...')
+    ct.create_item(body={
+        'id': 'sample_item_1',
+        'name': 'Sample Item',
+        'description': 'This is a sample item for testing purposes.'
+    })
+    print(f'### Sample item inserted into container "{container}"')
+except azure.cosmos.exceptions.CosmosResourceExistsError:
+    print(f'### Sample item already exists in container "{container}"')
+except Exception as err:
+    print(f'### Error inserting sample item into container "{container}": {err}')

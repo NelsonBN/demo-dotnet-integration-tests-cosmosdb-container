@@ -77,7 +77,7 @@ public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductReque
         public async Task<bool> UntilAsync(IContainer container)
         {
             // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-            const string REQUEST_URI = "http://localhost";
+            const string REQUEST_URI = "http://localhost/alive"; // -> https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/209#issuecomment-3487701068
 
             using var httpClient = new HttpClient(new UriRewriter(container.Hostname, container.GetMappedPublicPort(8080)));
 
@@ -85,18 +85,9 @@ public sealed class IntegrationTestsFactory : WebApplicationFactory<ProductReque
             {
                 using var httpResponse = await httpClient.GetAsync(REQUEST_URI)
                     .ConfigureAwait(false);
-
                 if(httpResponse.IsSuccessStatusCode)
                 {
-                    var content = await httpResponse.Content.ReadAsStringAsync();
-
-                    // Deserialize and check the ready field and validate if was returned as true
-                    using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
-                    if(jsonDocument.RootElement.TryGetProperty("ready", out var readyProperty) &&
-                       readyProperty.GetBoolean())
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             catch { }

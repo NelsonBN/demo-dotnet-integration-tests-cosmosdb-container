@@ -60,7 +60,6 @@ while(true)
         }
 
 
-
         await database.CreateContainerIfNotExistsAsync(CONTAINER_NAME, "/id");
 
         var databaseProperties = (await client.GetDatabaseQueryIterator<DatabaseProperties>().ReadNextAsync()).First();
@@ -113,10 +112,9 @@ internal class WaitUntil : IWaitUntil
     public async Task<bool> UntilAsync(IContainer container)
     {
         // CosmosDB's preconfigured HTTP client will redirect the request to the container.
-        const string REQUEST_URI = "http://localhost";
+        const string REQUEST_URI = "http://localhost/alive";
 
         using var httpClient = new HttpClient(new UriRewriter(container.Hostname, container.GetMappedPublicPort(8080)));
-
 
         try
         {
@@ -125,25 +123,33 @@ internal class WaitUntil : IWaitUntil
 
             if(httpResponse.IsSuccessStatusCode)
             {
-                var content = await httpResponse.Content.ReadAsStringAsync();
-                //Console.WriteLine($"--------------------> [HEALTH CHECK] {content}");
+                Console.WriteLine($"--------------------> [HEALTH CHECK] Container ready!!!");
+                return true;
+                // var content = await httpResponse.Content.ReadAsStringAsync();
+                // //Console.WriteLine($"--------------------> [HEALTH CHECK] {content}");
 
-                // Deserialize and check the ready field and validate if was returned as true
-                using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
-                if(jsonDocument.RootElement.TryGetProperty("ready", out var readyProperty) &&
-                   readyProperty.GetBoolean())
-                {
-                    return true;
-                }
+                // // Deserialize and check the ready field and validate if was returned as true
+                // using var jsonDocument = System.Text.Json.JsonDocument.Parse(content);
+                // if(jsonDocument.RootElement.TryGetProperty("ready", out var readyProperty) &&
+                //    readyProperty.GetBoolean())
+                // {
+                //     Console.WriteLine($"--------------------> [HEALTH CHECK] Container ready!!!");
+                //     return true;
+                // }
                 // else
                 // {
                 //     Console.WriteLine($"--------------------> [HEALTH CHECK] Container not ready yet");
+                //     return false;
                 // }
+            }
+            else
+            {
+                Console.WriteLine($"--------------------> [ERROR][HEALTH CHECK] Status Code: {httpResponse.StatusCode}");
             }
         }
         catch(Exception exception)
         {
-            //Console.WriteLine($"--------------------> [ERROR][HEALTH CHECK] {exception.Message}");
+            Console.WriteLine($"--------------------> [ERROR][HEALTH CHECK] {exception.Message}");
         }
         return false;
     }

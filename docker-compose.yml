@@ -1,19 +1,18 @@
 services:
-
   cosmosdb:
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20251022
     container_name: cosmosdb
     ports:
       - 8081:8081 # Api
       - 1234:1234 # UI
-      - 8080:8080 # Internal DB
+      - 8080:8080 # Health Endpoints
     environment:
       - LOG_LEVEL=debug
       - ENABLE_EXPLORER=false
 #      - ENABLE_CONSOLE_EXPORTER=true
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:8080/status | grep -o '\"ready\":[^,]*' | cut -d: -f2 | tr -d '[:space:]' | grep -q true"]
-      interval: 5s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ready || exit 1"]
+      interval: 10s
       timeout: 2s
       retries: 10
       start_period: 3s

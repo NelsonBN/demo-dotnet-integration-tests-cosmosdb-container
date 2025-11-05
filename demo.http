@@ -34,8 +34,8 @@ DELETE {{ApiHost}}/products/84d1e21d-595b-466b-bec2-c9f84ab5341b
 ### Health Checks - root endpoint
 GET {{healthCheckHost}}
 
-### Health Check - health endpoint
-GET {{healthCheckHost}}/health
+### Health Check - alive endpoint
+GET {{healthCheckHost}}/alive
 
 ### Health Check - readiness endpoint
 GET {{healthCheckHost}}/ready

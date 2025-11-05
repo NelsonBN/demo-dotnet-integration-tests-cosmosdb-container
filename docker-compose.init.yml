@@ -5,7 +5,7 @@ networks:
 services:
 
   cosmosdb:
-    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20250117
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-EN20251022
     container_name: cosmosdb
     ports:
       - 8081:8081 # Api
@@ -15,11 +15,11 @@ services:
     networks:
       - demo-networks
     healthcheck:
-      test: ["CMD", "curl", "-fk", "http://localhost:1234"]
-      interval: 5s
-      timeout: 3s
-      retries: 40
-      start_period: 20s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ready || exit 1"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
 
   cosmosdb-init:
     image: python:3.11-slim
@@ -29,7 +29,7 @@ services:
       - KEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
       - DATABASE=demodb
       - CONTAINER=democontainer
-      - CONTAINER_PK=democontainer
+      - CONTAINER_PK=id
     volumes:
       - ./tests/init-db.py:/app/init-db.py
     command: sh -c "pip install azure-cosmos && python /app/init-db.py"

@@ -9,6 +9,17 @@
 - [Init Script](./tests/init-db.py)
 
 
+## CosmosDb Emulator - Details
+
+### Health Checks Endpoints
+
+- `GET http://localhost:8080/alive`: returns 503 if PostgreSQL and Gateway are unhealthy
+- `GET http://localhost:8080/ready`: returns 503 if any component is not in the right state (if explorer is disabled, that doesn't count)
+- `GET http://localhost:8080/status`: always return 200 and you can parse the response body in JSON for details
+> Reference: [Endpoints source](https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/209#issuecomment-3487701068)
+
+
+
 
 ## References
 
